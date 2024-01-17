@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 # py -m pip install colorama
 from colorama import Fore, Back, Style, init
-init(autoreset=True) #Ends color formatting after each print statement
+init(autoreset=True) # Ends color formatting after each print statement
 from wordle_wordlist import get_word_list
 import time
 
@@ -17,7 +17,7 @@ def get_feedback(guess: str, secret_word: str) -> str:
         - Correct letter, wrong spot: lowercase letter ('a'-'z')
         - Letter not in the word: '-'
 
-       For example:
+       Examples:
         - get_feedback("lever", "EATEN") --> "-e-E-"
         - get_feedback("LEVER", "LOWER") --> "L--ER"
         - get_feedback("MOMMY", "MADAM") --> "M-m--"
@@ -29,13 +29,12 @@ def get_feedback(guess: str, secret_word: str) -> str:
         Returns:
             str: Feedback string, based on comparing guess with the secret word
     '''
-    #edge cases
     guessUpper = guess.upper()
     guessList = list(guessUpper)
     secretList = list(secret_word)
     feedBack = []
 
-    if len(guess)!=5 or guessUpper not in get_word_list():
+    if len(guess) != 5 or guessUpper not in get_word_list():
         return 'This is an invalid word. Guess again!'
     else:
         for i in range(len(guessList)):
@@ -59,14 +58,13 @@ def get_feedback(guess: str, secret_word: str) -> str:
     return ''.join(feedBack)
 
 word_list_global = set(get_word_list().copy())
-invalid_indexes = {'A':set(), 'B':set(), 'C':set(), 'D':set(), 'E':set(), 'F':set(), 'G':set(), 'H':set(), 'I':set(), 
-                   'J':set(), 'K':set(), 'L':set(), 'M':set(), 'N':set(), 'O':set(), 'P':set(), 'Q':set(), 'R':set(), 
-                   'S':set(), 'T':set(), 'U':set(), 'V':set(), 'W':set(), 'X':set(), 'Y':set(), 'Z':set()}
+invalid_indexes = dict()
+for char in range(ord('A'), ord('Z') + 1):
+    invalid_indexes[chr(char)] = set()
 invalid_index_copy = invalid_indexes.copy()
-scrabble_dict = {'A': 9, 'B': 2, 'C': 2, 'D': 4, 'E': 12, 'F': 2,
-    'G': 3, 'H': 2, 'I': 9, 'J': 1, 'K': 1, 'L': 4, 'M': 2, 'N': 6,
-    'O': 8, 'P': 2, 'Q': 1, 'R': 6, 'S': 4, 'T': 6, 'U': 4, 'V': 2,
-    'W': 2, 'X': 1, 'Y': 2, 'Z': 1 }
+scrabble_dict = {'A': 9, 'B': 2, 'C': 2, 'D': 4, 'E': 12, 'F': 2, 'G': 3, 'H': 2, 'I': 9,
+                 'J': 1, 'K': 1, 'L': 4, 'M': 2, 'N': 6, 'O': 8, 'P': 2, 'Q': 1, 'R': 6,
+                 'S': 4, 'T': 6, 'U': 4, 'V': 2, 'W': 2, 'X': 1, 'Y': 2, 'Z': 1 }
 confirmed_list = ['-','-','-','-','-']
 valid_letters = set()
 starting_word = 'REACT'
@@ -87,9 +85,8 @@ def get_AI_guess(word_list: list[str], guesses: list[str], feedback: list[str]) 
     if len(guesses) == 0: #first guess
         #reset global variables for each new secret word
         word_list_global = set(word_list)
-        invalid_indexes = {'A':set(), 'B':set(), 'C':set(), 'D':set(), 'E':set(), 'F':set(), 'G':set(), 'H':set(), 'I':set(), 
-                   'J':set(), 'K':set(), 'L':set(), 'M':set(), 'N':set(), 'O':set(), 'P':set(), 'Q':set(), 'R':set(), 
-                   'S':set(), 'T':set(), 'U':set(), 'V':set(), 'W':set(), 'X':set(), 'Y':set(), 'Z':set()}
+        for key in invalid_indexes:
+            invalid_indexes[key] = set()
         confirmed_list = ['-', '-', '-', '-', '-']
         valid_letters = set()
 
@@ -157,7 +154,6 @@ def colorize_output(result:str, guess:str)->str:
     print(Back.LIGHTBLACK_EX + "  ")
     #print()
 
-# TODO: Define and implement your own functions!
 def start_game():
     print("WELCOME TO WORDLE")
     num_guesses = 0
@@ -219,7 +215,8 @@ if __name__ == "__main__":
         while len(starting_word) != 5 or starting_word.upper() not in get_word_list():
             print(f'{starting_word} is an invalid word!')
             starting_word = input("Please select a 5-letter starting word: ").upper()
-        
+        print("Calculating...")
+
         total_guesses = 0
         max_guesses = 0
         min_guesses = len(get_word_list())
@@ -244,11 +241,11 @@ if __name__ == "__main__":
                             min_guesses = guess_count
                         total_guesses += guess_count
                         break
-            print(i)
+            print("Progress: " + i + "%")
         print(f"max guesses: {max_guesses}")
         print(f"min guesses: {min_guesses}")
         print(f"average guesses: {total_guesses / (len(get_word_list()*100))}")
-    elif game_mode == 3: #watch AI play wordle
+    elif game_mode == '3': #watch AI play wordle
         guess_count = 0
         secret_word = word_generator()
         #secret_word = 'ABASE'
@@ -268,7 +265,7 @@ if __name__ == "__main__":
 
             if AI_guess == secret_word:
                 break
-    else: #debug to test one word at a time
+    else: # debug to test one word at a time
         secret_word = input("Please select a 5-letter secret word: ").upper()
         while len(secret_word) != 5 or secret_word.upper() not in get_word_list():
             print(f'{secret_word} is an invalid word!')
